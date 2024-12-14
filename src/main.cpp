@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include <Arduino.h>
 #include <HttpClient.h>
 #include <WiFi.h>
@@ -69,7 +71,7 @@ void setup()
   WiFiClient c;
   HttpClient http(c);
 
-  int err = http.post("35.160.204.3", 3001, "/get_data", NULL);
+  int err = http.get("35.160.204.3", 3001, "/get_data", NULL);
 
   if (err == 0)
   {
@@ -164,6 +166,23 @@ int find_min(int nums[], int size)
   return min_num;
 }
 
+double find_median(int nums[], int size)
+{
+  std::sort(nums, nums + size);
+  // If even, return average of the two elements
+  if (size % 2 == 0)
+  {
+    int mid1 = nums[size / 2 - 1];
+    int mid2 = nums[size / 2];
+    return (mid1 + mid2) / 2.0;
+  }
+  // If odd, return middle element
+  else
+  {
+    return nums[size / 2];
+  }
+}
+
 void loop()
 {
   // Update sig and prev_sig queue
@@ -209,11 +228,11 @@ void loop()
   // Calculate heart rate and POST to EC2 instance
   if (millis() - last_calculation >= POST_INTERVAL)
   {
-    // Calculate total_time between most and least recent times in recent_peaks
+    // Calculate times between each peak
     int most_recent = (recent_peaks_pos - 1 + peaks_queue_len) % peaks_queue_len;
     int least_recent = recent_peaks_pos;
-    int total_time = recent_peaks[most_recent] - recent_peaks[least_recent];
 
+    int total_time = recent_peaks[most_recent] - recent_peaks[least_recent];
     // Average time between beats in ms
     float average_time = (float)total_time / (peaks_queue_len - 1);
     float average_bpm = 1000 / average_time * 60;
