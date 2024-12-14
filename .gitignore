@@ -1,0 +1,18 @@
+# PlatformIO Core and workspace files
+.vscode/
+.idea/
+.pio/
+.build/
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# Logs and temporary files
+*.log
+
+venv/
+test/
+lib/
+include/
+build/
